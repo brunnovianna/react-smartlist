@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Cursor specific files
+.cursorrules
+
+# Documentation files
+*.pdf
