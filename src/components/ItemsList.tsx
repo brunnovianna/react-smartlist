@@ -3,7 +3,8 @@ import { useState } from "react";
 import type { ListItem } from "../types";
 
 import Button from "./Forms/Button";
-import Input from "./Forms/Input";
+import ItemEdit from "./ItemEdit";
+import ItemView from "./ItemView";
 
 function ItemsList({ 
         items, 
@@ -52,23 +53,42 @@ function ItemsList({
         }
     }
 
+    const editItemNode = <>
+        <ItemEdit 
+            value={ editingText }
+            onChange={ handleEditItemText }
+            onKeyDown={ handleEditInputKeyPress }
+        />
+        <Button text="✅" onClick={ saveEditItem }/>
+    </>
+
+    const viewItemNode = ({ id, text, checked }: { id: number, text: string, checked: boolean }) => {
+
+        return (<>
+            <ItemView 
+                checked={ checked }
+                text={ text }
+                onCheck={ () => onCheckItem(id) }
+                onStartEditing = { () => editItem(id) }
+            />
+            <Button text="🗑️" onClick={ () => onDelete(id) } />
+        </>)
+    }
+
     return (
         <div>
             {
-              items.map(({id, checked, text}) => {
+              items.map((item) => {
 
-                return <li key={ id } className="flex text-left">
-                    <div className={editingText && editingId === id ? " hidden" : "flex flex-auto gap-5"}>
-                        <Input type="checkbox" onChange={() => onCheckItem(id)} checked={ checked } />
-                      <div className="w-100 flex-auto" onDoubleClick={() => editItem(id)}>{ text }</div>
-                      <Button text="🗑️" onClick={ () => onDelete(id) } />
-
-                    </div>
-                    <div className={!editingText || editingId !== id ? "hidden" : 'flex flex-auto gap-5'}>
-                        <Input value={ editingText } className='flex-auto'
-                            onChange={ handleEditItemText }
-                            onKeyDown={ handleEditInputKeyPress } />
-                        <Button text="✅" onClick={ saveEditItem }/>
+                return <li key={ item.id } className="flex text-left">
+                    
+                    <div className="flex flex-auto gap-5">
+                        {
+                            editingText && editingId === item.id ?
+                                editItemNode: 
+                                viewItemNode(item)
+                        }
+                        
                     </div>
                   </li>
               })
