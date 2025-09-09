@@ -15,7 +15,7 @@ function ItemsList({
         items: Array<ListItem>, 
         onNewText: (id: number, text: string) => void, 
         onDelete: (id: number) => void,
-        onCheckItem: (id: number) => void
+        onCheckItem: (id: number, checked: boolean) => void
     }) {
 
     const [editingText, setEditingText] = useState('');
@@ -68,7 +68,7 @@ function ItemsList({
             <ItemView 
                 checked={ checked }
                 text={ text }
-                onCheck={ () => onCheckItem(id) }
+                onCheck={ () => onCheckItem(id, checked) }
                 onStartEditing = { () => editItem(id) }
             />
             <Button text="🗑️" onClick={ () => onDelete(id) } />

@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import type { ListItem } from './types';
+import type { ListItem, ResponseOK, ResponseError } from './types';
+
+import { getItems, createNewItem, updateItemText, toggleItemCheck, deleteItem } from './services/items';
 
 import Header from './components/Header';
 import ItemsList from './components/ItemsList';
@@ -10,58 +12,79 @@ import Input from './components/Forms/Input';
 import './App.css';
 
 function App() {
-  const listItemsDefault: ListItem[] = [{
-    id: 1,
-    text: 'Leite',
-    creationTime: new Date(),
-    checked: true
-  }, {
-    id: 2,
-    text: 'Pão',
-    creationTime: new Date(),
-    checked: false
-  }];
-  const [listItems, setListItems] = useState<ListItem[]>(listItemsDefault);
+  const [listItems, setListItems] = useState<ListItem[]>([]);
   const [newItemText, setNewItemText] = useState("");
 
-  const toggleChecked = (itemId: number) => {
-    setListItems(listItems.map((item) => {
-      if (item.id === itemId) {
-        return {...item, checked: !item.checked};
-      } 
-      return item;
-    }))
+  const loadItems = async () => {
+    try {
+      const response = await getItems();
+      if (response.status === 'ok') {
+        setListItems(response.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(()=> {
+    loadItems();
+  }, []);
+
+  const createItem = async (text: string) => {
+    try {
+      const response: ResponseOK<ListItem> | ResponseError = await createNewItem(text);
+
+      if (response.status === 'ok') {
+        setListItems([...listItems, response.data]);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const toggleChecked = async (id: number, checked: boolean) => {
+    const response: ResponseOK<ListItem> | ResponseError = await toggleItemCheck(id, checked);
+
+    if (response.status === 'ok') {
+      setListItems(listItems.map((item) => {
+        if (item.id === id) {
+          return response.data;
+        } 
+        return item;
+      }))
+    }
   }
 
   const handleNewItemText = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewItemText(e.target.value);
   }
-  
 
   const addItem = (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    setListItems([...listItems, {
-      id: Date.now(),
-      text: newItemText,
-      creationTime: new Date(),
-      checked: false
-    }])
+    createItem(newItemText);
     setNewItemText('');
   }
 
-  const deleteItem = (itemId: number) => {
-    setListItems(listItems.filter((item) => item.id !== itemId));
+  const remove = async (id: number) => {
+    const response = await deleteItem(id);
+    if (response.status === 'ok') {
+      setListItems(listItems.filter((item) => item.id !== id));
+    }
+    
   }
 
-  const editItemText = (id: number, text: string) => {
+  const editItemText = async (id: number, text: string) => {
     if (text) {
-      setListItems(listItems.map((item) => {
-        if (item.id === id) {
-          return {...item, text };
-        }
-        return item;
-      }))
+      const response = await updateItemText(id, text);
+
+      if (response.status === 'ok') {
+        setListItems(listItems.map((item) => {
+          if (item.id === id) {
+            return { ...response.data };
+          }
+          return item;
+        }))
+      }
     }
   }
 
@@ -79,7 +102,7 @@ function App() {
         </div>
         <div className="space-y-2">
           <ul>
-            <ItemsList items={ listItems } onCheckItem={ toggleChecked } onNewText={ editItemText } onDelete={ deleteItem }/>
+            <ItemsList items={ listItems } onCheckItem={ toggleChecked } onNewText={ editItemText } onDelete={ remove }/>
           </ul>
         </div>
       </div>
