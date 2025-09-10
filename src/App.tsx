@@ -14,20 +14,41 @@ import './App.css';
 function App() {
   const [listItems, setListItems] = useState<ListItem[]>([]);
   const [newItemText, setNewItemText] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const loadItems = async () => {
+    let items: ListItem[] = [];
     try {
       const response = await getItems();
+
       if (response.status === 'ok') {
-        setListItems(response.data);
+        items = response.data;
       }
+
+      return items;
     } catch (error) {
       console.log(error);
+      return [];
     }
   }
 
   useEffect(()=> {
-    loadItems();
+    let canLoadItems = true;
+    setIsLoading(true);
+
+    async function startLoadingItems() {
+        const items: ListItem[] = await loadItems();
+
+        if (canLoadItems) {
+          setListItems(items);
+        }
+        setIsLoading(false);
+    }
+
+    startLoadingItems();
+    return () => {
+      canLoadItems = false;
+    }
   }, []);
 
   const createItem = async (text: string) => {
