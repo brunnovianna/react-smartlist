@@ -17,6 +17,7 @@ function App() {
   const [listItems, setListItems] = useState<ListItem[]>([]);
   const [newItemText, setNewItemText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isChanging, setIsChanging] = useState(false);
 
   const loadItems = async () => {
     let items: ListItem[] = [];
@@ -89,15 +90,20 @@ function App() {
   }
 
   const remove = async (id: number) => {
+    setIsChanging(true);
+
     const response = await deleteItem(id);
+    
     if (response.status === 'ok') {
       setListItems(listItems.filter((item) => item.id !== id));
+      setIsChanging(false);
     }
-    
   }
 
   const editItemText = async (id: number, text: string) => {
     if (text) {
+      setIsChanging(true);
+
       const response = await updateItemText(id, text);
 
       if (response.status === 'ok') {
@@ -106,7 +112,8 @@ function App() {
             return { ...response.data };
           }
           return item;
-        }))
+        }));
+        setIsChanging(false);
       }
     }
   }
@@ -127,9 +134,7 @@ function App() {
           {
             isLoading ? 
               <Skeleton /> :
-              <ul>
-                <ItemsList items={ listItems } onCheckItem={ toggleChecked } onNewText={ editItemText } onDelete={ remove }/>
-              </ul>
+              <ItemsList items={ listItems } isChanging={ isChanging } onCheckItem={ toggleChecked } onNewText={ editItemText } onDelete={ remove }/>
           }
         </div>
       </div>
