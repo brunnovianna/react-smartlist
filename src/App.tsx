@@ -4,6 +4,8 @@ import type { ListItem, ResponseOK, ResponseError } from './types';
 
 import { getItems, createNewItem, updateItemText, toggleItemCheck, deleteItem } from './services/items';
 
+import Skeleton from './components/Skeleton/Skeleton';
+
 import Header from './components/Header';
 import ItemsList from './components/ItemsList';
 import Button from './components/Forms/Button';
@@ -122,9 +124,13 @@ function App() {
           </form>
         </div>
         <div className="space-y-2">
-          <ul>
-            <ItemsList items={ listItems } onCheckItem={ toggleChecked } onNewText={ editItemText } onDelete={ remove }/>
-          </ul>
+          {
+            isLoading ? 
+              <Skeleton /> :
+              <ul>
+                <ItemsList items={ listItems } onCheckItem={ toggleChecked } onNewText={ editItemText } onDelete={ remove }/>
+              </ul>
+          }
         </div>
       </div>
     </div>
