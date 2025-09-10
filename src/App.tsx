@@ -4,7 +4,8 @@ import type { ListItem, ResponseOK, ResponseError } from './types';
 
 import { getItems, createNewItem, updateItemText, toggleItemCheck, deleteItem } from './services/items';
 
-import Skeleton from './components/Skeleton';
+import Skeleton from './components/Skeleton/Skeleton';
+
 import Header from './components/Header';
 import ItemsList from './components/ItemsList';
 import Button from './components/Forms/Button';
