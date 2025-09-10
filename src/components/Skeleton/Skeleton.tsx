@@ -3,11 +3,11 @@ import SkeletonItem from "./SkeletonItem";
 function Skeleton() {
     return (
         <ul className="skeleton animate-pulse w-full pt-6">
-            <SkeletonItem width="450" />
-            <SkeletonItem width="650" />
-            <SkeletonItem width="230" />
-            <SkeletonItem width="180" />
-            <SkeletonItem width="350" />
+            <SkeletonItem width="w-[450px]" />
+            <SkeletonItem width="w-[650px]" />
+            <SkeletonItem width="w-[230px]" />
+            <SkeletonItem width="w-[180px]" />
+            <SkeletonItem width="w-[350px]" />
         </ul>
     );
 }
