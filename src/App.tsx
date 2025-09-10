@@ -114,7 +114,7 @@ function App() {
     <div className="min-h-screen bg-white p-10 rounded-lg">
       <div className="w-full">
         <Header itemsQty={ listItems.length }/>
-        <div className="space-y-2 my-10">
+        <div className="space-y-2 my-6">
           {
             isLoading ? 
               <Skeleton /> :

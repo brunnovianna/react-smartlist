@@ -64,7 +64,7 @@ function ItemsList({
         <Button text="✅" onClick={ saveEditItem }/>
     </>
 
-    const empytListNode = <div className="border rounded-[6px] border-gray-200 p-1 text-gray-500 text-left">
+    const empytListNode = <div className="border rounded-[6px] bg-gray-50 border-gray-100 py-1 px-3 text-gray-500 text-left text-sm">
         Nenhum item na lista
     </div>
 
