@@ -69,6 +69,8 @@ function App() {
   }
 
   const toggleChecked = async (id: number, checked: boolean) => {
+    setIsChanging(true);
+
     const response: ResponseOK<ListItem> | ResponseError = await toggleItemCheck(id, checked);
 
     if (response.status === 'ok') {
@@ -77,7 +79,8 @@ function App() {
           return response.data;
         } 
         return item;
-      }))
+      }));
+      setIsChanging(false);
     }
   }
 
