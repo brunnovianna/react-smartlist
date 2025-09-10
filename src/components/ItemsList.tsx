@@ -64,6 +64,10 @@ function ItemsList({
         <Button text="✅" onClick={ saveEditItem }/>
     </>
 
+    const empytListNode = <div className="border rounded-[6px] bg-gray-50 border-gray-100 py-1 px-3 text-gray-500 text-left text-sm">
+        Nenhum item na lista
+    </div>
+
     const viewItemNode = ({ id, text, checked }: { id: number, text: string, checked: boolean }) => {
 
         return (<>
@@ -88,24 +92,30 @@ function ItemsList({
                     <span className="sr-only">Loading...</span>
                 </div>
             </div>
-            <ul className={`${isChanging ? 'opacity-20' : ''}`}>
-            {
-              items.map((item) => {
 
-                return <li key={ item.id } className="flex text-left">
-                    
-                    <div className="flex flex-auto gap-5">
-                        {
-                            editingText && editingId === item.id ?
-                                editItemNode: 
-                                viewItemNode(item)
-                        }
+            {
+                items.length === 0 ?
+                empytListNode :
+                <ul className={`${isChanging ? 'opacity-20' : ''}`}>
+                {
+                items.map((item) => {
+
+                    return <li key={ item.id } className="flex text-left">
                         
-                    </div>
-                  </li>
-              })
+                        <div className="flex flex-auto gap-5">
+                            {
+                                editingText && editingId === item.id ?
+                                    editItemNode: 
+                                    viewItemNode(item)
+                            }
+                            
+                        </div>
+                    </li>
+                })
+                }
+                </ul>
             }
-            </ul>
+            
         </div>
     )
 }
