@@ -122,7 +122,7 @@ function App() {
           }
         </div>
       </div>
-      <AddItem onAddItem={ createItem }/>
+      <AddItem blocked={ isChanging || isLoading } onAddItem={ createItem }/>
     </div>
   )
 }
