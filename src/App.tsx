@@ -21,8 +21,8 @@ function App() {
     let items: ListItem[] = [];
     try {
       const response = await getItems();
-
-      if (response.status === 'ok') {
+      
+      if (response.status !== 'error') {
         items = response.data;
       }
 
