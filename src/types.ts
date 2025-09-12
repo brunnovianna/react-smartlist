@@ -6,12 +6,18 @@ export interface ListItem {
 }
 
 export interface ResponseOK<T> {
-    status: 'ok';
-    statusText: string;
+    status: "ok";
     data: T;
+}
+
+export interface errorTypes {
+    code?: string
+    response?: {
+        status: number
+    }
 }
 
 export interface ResponseError {
     status: 'error';
-    error: string | unknown;
+    error: string;
 }
