@@ -9,41 +9,41 @@ import Skeleton from './components/Skeleton/Skeleton';
 import Header from './components/Header';
 import AddItem from './components/AddItem';
 import ItemsList from './components/ItemsList';
+import Toast from './components/Toast';
 
 import './App.css';
+
 
 function App() {
   const [listItems, setListItems] = useState<ListItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isChanging, setIsChanging] = useState(false);
+  const [error, setError] = useState<ResponseError | null>(null);
 
   const loadItems = async () => {
-    let items: ListItem[] = [];
-    try {
-      const response = await getItems();
-      
-      if (response.status !== 'error') {
-        items = response.data;
-      }
+    setError(null);
 
-      return items;
-    } catch (error) {
-      console.log(error);
-      return [];
+    const response = await getItems();
+
+    if (response.status === 'ok') {
+      return response.data || [];
     }
+    
+    setError(response);
+    return [];
   }
-
+  
   useEffect(()=> {
     let canLoadItems = true;
     setIsLoading(true);
-
+    
     async function startLoadingItems() {
-        const items: ListItem[] = await loadItems();
+      const items: ListItem[] = await loadItems();
 
-        if (canLoadItems) {
-          setListItems(items);
-        }
-        setIsLoading(false);
+      if (canLoadItems) {
+        setListItems(items);
+      }
+      setIsLoading(false);
     }
 
     startLoadingItems();
@@ -55,14 +55,12 @@ function App() {
   const createItem = async (text: string) => {
     setIsChanging(true);
 
-    try {
-      const response: ResponseOK<ListItem> | ResponseError = await createNewItem(text);
+    const response: ResponseOK<ListItem> | ResponseError = await createNewItem(text);
 
-      if (response.status === 'ok') {
-        setListItems([...listItems, response.data]);
-      }
-    } catch (error) {
-      console.log(error);
+    if (response.status === 'ok') {
+      setListItems([...listItems, response.data]);
+    } else {
+      setError(response);
     }
 
     setIsChanging(false);
@@ -80,8 +78,10 @@ function App() {
         } 
         return item;
       }));
-      setIsChanging(false);
+    } else {
+      setError(response);
     }
+    setIsChanging(false);
   }
 
   const remove = async (id: number) => {
@@ -91,8 +91,10 @@ function App() {
     
     if (response.status === 'ok') {
       setListItems(listItems.filter((item) => item.id !== id));
-      setIsChanging(false);
+    } else {
+      setError(response);
     }
+    setIsChanging(false);
   }
 
   const editItemText = async (id: number, text: string) => {
@@ -108,8 +110,10 @@ function App() {
           }
           return item;
         }));
-        setIsChanging(false);
+      } else {
+        setError(response);
       }
+      setIsChanging(false);
     }
   }
 
@@ -124,6 +128,10 @@ function App() {
               <ItemsList items={ listItems } isChanging={ isChanging } onCheckItem={ toggleChecked } onNewText={ editItemText } onDelete={ remove }/>
           }
         </div>
+        {
+          error && <Toast text={ error.error } />
+        }
+        
       </div>
       <AddItem blocked={ isChanging || isLoading } onAddItem={ createItem }/>
     </div>
